@@ -1,0 +1,46 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ dev, prod ]
+  pull_request:
+    branches: [ dev, prod ]
+
+jobs:
+  lint-and-test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Check Code Formatting (gofmt)
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "The following files are not formatted properly with gofmt:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Run Go Vet
+        run: go vet ./...
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v7
+        with:
+          version: latest
+          install-mode: goinstall
+          args: --config=.golangci.yml
+
+      - name: Run Unit Tests
+        run: go test -v ./...
+
+      - name: Build Application Binary
+        run: go build -v -o bin/api cmd/api/main.go

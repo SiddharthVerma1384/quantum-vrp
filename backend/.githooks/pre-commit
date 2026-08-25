@@ -1,0 +1,39 @@
+#!/bin/sh
+
+echo "========================================================================="
+echo "🔍 Running pre-commit checks..."
+echo "========================================================================="
+
+# 1. Go vet
+echo ""
+echo "▶ go vet ./..."
+if ! go vet ./...; then
+    echo "❌ go vet failed. Fix the issues above before committing."
+    exit 1
+fi
+
+# 2. golangci-lint (skip if not installed)
+if command -v golangci-lint >/dev/null 2>&1; then
+    echo ""
+    echo "▶ golangci-lint run"
+    if ! golangci-lint run --config=.golangci.yml; then
+        echo "❌ Linting failed. Fix the issues above before committing."
+        exit 1
+    fi
+else
+    echo ""
+    echo "⚠ golangci-lint not found, skipping lint check."
+fi
+
+# 3. Quick tests (short mode, skip if no tests exist)
+echo ""
+echo "▶ go test -short ./..."
+if ! go test -short -count=1 ./... 2>/dev/null; then
+    echo "❌ Tests failed. Fix them before committing."
+    exit 1
+fi
+
+echo ""
+echo "========================================================================="
+echo "✅ All pre-commit checks passed!"
+echo "========================================================================="

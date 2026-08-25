@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+bin/
+tmp/
+*.exe
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+
+# Documentation (not needed in image)
+README.md
+
+# Tests
+tests/
+
+# Dev files
+.air.toml
+.golangci.yml
+.githooks/
+.agents/
+.github/
+Dockerfile.dev
+docker-compose.yml
+docker-compose*.yml
+Makefile

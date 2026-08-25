@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Regex to enforce Conventional Commits:
+# e.g., "feat: add user controller" or "fix(auth): update jwt expiration"
+commit_regex="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+$"
+
+# Get the commit message file path from git
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Check if the commit message matches the regex
+if ! echo "$commit_msg" | grep -Eq "$commit_regex"; then
+    echo "========================================================================="
+    echo "❌ ERROR: Commit message rejected!"
+    echo "-------------------------------------------------------------------------"
+    echo "Your commit message: '$commit_msg'"
+    echo ""
+    echo "Please use the Conventional Commits format:"
+    echo "  <type>(<scope>): <description>"
+    echo ""
+    echo "Allowed types:"
+    echo "  feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+    echo ""
+    echo "Example:"
+    echo "  feat(auth): add password hashing utility"
+    echo "  fix: resolve database connection timeout"
+    echo "========================================================================="
+    exit 1
+fi
